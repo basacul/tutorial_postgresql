@@ -1,7 +1,8 @@
-const fs = require('fs').promises;
+const fs = require('fs').promises; // promises to avoid crashes
 const express = require('express');
 const bodyParser = require('body-parser')
-const fortunes = require('./data/fortunes');
+var fortunes = require('./data/fortunes'); // var in order to update the values as long the server is alive 
+
 
 const app = express();
 
@@ -25,29 +26,71 @@ app.get('/fortunes/:id', (req, res) => {
 	res.json(fortunes.find(f => f.id == req.params.id));
 });
 
+const writeFortunes = json => {
+	/* In order to avoid crashing the app and deleting the content in 
+	 * fortunes.json, you need to ignore all folders, where data might
+	 * change. Otherwise nodemon restarts after each change with 
+	 * disastrous consequences.
+	 */
+	try{		
+		fs.writeFile('./data/fortunes.json', JSON.stringify(json));
+	} catch (error) {
+		console.log(error);
+	}
+};
+
 app.post('/fortunes', (req, res) => {	
 	const { message, lucky_number, spirit_animal } = req.body;
-	const id = fortunes.length + 1;
-	const updated_fortunes = fortunes.concat( { 
+	const id = fortunes.length + 1; // id starts with 1
+	
+	fortunes = fortunes.concat( { 
 		id , 
 		message, 
 		lucky_number, 
 		spirit_animal 
-		});
+		}
+	);
 	
-	/* Sometime this segment empties the file and crashes the app. 
-	 * As it is a tutorial I did not analyze the mistake and simply created
-	 * a temporary file, where I store further objects without touching the original.
-	 * There exists the option to complete the original data file by adding the new
-	 * objects in tempFile.json to fortunes.json.
-	 */
-	try{		
-		fs.writeFile('./data/tempFile.json', JSON.stringify(updated_fortunes))
-	} catch (error) {
-		console.log(error);
-	}
+	writeFortunes(fortunes);
 	
-	res.json(updated_fortunes);
+	res.json(fortunes);
 });
+
+app.put('/fortunes/:id', (req, res) => {
+	const { id } = req.params;
+	
+	if(id > 0 && id <= fortunes.length){
+		// old_fortune gets the reference of the entry
+		const old_fortune = fortunes.find(f => f.id == id);
+		
+		['message', 'lucky_number', 'spirit_animal'].forEach(key => {
+			if(req.body[key]){old_fortune[key] = req.body[key];}
+		});
+		
+		// fortunes is indirectly updated by old_fortune
+		writeFortunes(fortunes);
+		
+		res.json(fortunes);
+		
+	}else{
+		res.send(`A fortune with the id:${id} does not exist.`);
+	}
+		
+});
+
+app.delete('/fortunes/:id', (req, res) => {
+	const { id } = req.params;
+	
+	if(id > 0 && id <= fortunes.length){
+		// remove the object with the respective id
+		fortunes = fortunes.filter(f => f.id != id);
+		writeFortunes(fortunes);
+		res.json(fortunes);
+		
+	}else{
+		res.send(`A fortune with the id:${id} does not exist.`);
+	}
+});
+
 
 module.exports = app;
