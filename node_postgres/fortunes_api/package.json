@@ -2,11 +2,11 @@
   "name": "fortunes_api",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "bin/www",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index",
-    "dev": "nodemon index"
+    "start": "node ./bin/www",
+    "dev": "nodemon ./bin/www"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +15,7 @@
     "nodemon": "^2.0.15"
   },
   "dependencies": {
+    "body-parser": "^1.19.1",
     "express": "^4.17.2"
   }
 }

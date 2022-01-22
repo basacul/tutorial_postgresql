@@ -1,4 +1,5 @@
-#!/usr/bin/env node
+#!/usr/bin node
+
 const app = require('../app');
 
 const port = 4500;
