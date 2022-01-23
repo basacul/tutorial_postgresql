@@ -88,3 +88,65 @@ postgres@goorm:~$ exit
 logout
 root@goorm:/workspace/tutorial_postgresql/node_postgres#
 ```
+** Further issues
+The database will shut down from time to time. This has to do with goorm.io doing something in the background. When this happens, you will see, that the terminal changed. 
+
+In that case just run the steps 9 and 10 and your database is running - till you need to repeat these steps.
+
+## Initialize database
+When you are currently the user postgres in goorm, then you can run directly in the terminal without specifying the user.
+
+1. Create the database
+```
+postgres@goorm:~$ createdb creaturesdb
+```
+2. Initialize the database creaturesdb with the creatures.sql file
+```
+postgres@goorm:~$ cd /workspace/tutorial_postgresql/node_postgres/psql
+postgres@goorm:/workspace/tutorial_postgresql/node_postgres/psql$ psql creaturesdb < creatures.sql 
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+INSERT 0 3
+INSERT 0 3
+INSERT 0 3
+INSERT 0 4
+INSERT 0 3
+postgres@goorm:/workspace/tutorial_postgresql/node_postgres/psql$
+````
+
+## Joining tables
+How to join tables from the linking tables.
+```
+postgres@goorm:~$ psql creaturesdb
+psql (14.1 (Ubuntu 14.1-1.pgdg18.04+1))
+Type "help" for help.
+
+creaturesdb=# SELECT * FROM allies JOIN elves ON allies.elf = elves.name;
+ wizard  |   elf   |  name   | speed
+---------+---------+---------+-------
+ Saruman | Legolas | Legolas |    10
+ Gandalf | Legolas | Legolas |    10
+ Gandalf | Arwen   | Arwen   |     9
+ Saruman | Elrond  | Elrond  |     5
+(4 rows)
+
+creaturesdb=# select * from guardians join hobbits on guardians.hobbit = hobbits.name;
+   elf   | hobbit | name  | personality
+---------+--------+-------+-------------
+ Legolas | Frodo  | Frodo | careful
+ Arwen   | Sam    | Sam   | brave
+ Elrond  | Bilbo  | Bilbo | greedy
+(3 rows)
+
+creaturesdb=# select * from guardians join hobbits on guardians.hobbit = hobbits.name join elves on guardians.elf = elves.name;
+   elf   | hobbit | name  | personality |  name   | speed
+---------+--------+-------+-------------+---------+-------
+ Legolas | Frodo  | Frodo | careful     | Legolas |    10
+ Arwen   | Sam    | Sam   | brave       | Arwen   |     9
+ Elrond  | Bilbo  | Bilbo | greedy      | Elrond  |     5
+(3 rows)
+
+```
