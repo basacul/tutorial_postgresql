@@ -2,7 +2,7 @@
 Udemy course Node, SQL, &amp; PostgreSQL - Mastering Backend on goorm.io with a container running on ubuntu 18.04.
 
 ## How to set up PostgreSQL on container
-Unfortunately you will encounter several issues when installing postgresql on the container. In order to resolve all the issues, follow this steps.
+Unfortunately you will encounter several issues when installing postgresql onto the current container. In order to resolve all the issues, follow these steps.
 
 0. Update the locale to include en_US.UTF8 because it is set to Korean
 ```
@@ -82,3 +82,9 @@ Type "help" for help.
 
 postgres=#
 ````
+12. You can exit the user postgres (when you see postgres@goorm:~$) with **exit**
+````
+postgres@goorm:~$ exit
+logout
+root@goorm:/workspace/tutorial_postgresql/node_postgres#
+```
