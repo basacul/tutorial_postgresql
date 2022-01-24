@@ -193,13 +193,22 @@ total 8
 drwxrwxr-x 2 root root 4096 Jan 24 12:59 sql
 
 ```
-4. Update pg_hba.conf file to allow the server to recognise the user node_user
+4. Update pg_hba.conf file to allow the server to recognise the user node_user and set 
 ```
 root@goorm: /anyfolder# vim /etc/postgresql/14/main/pg_hba.conf
-....
-# local 		DATABASE 	USER	METHOD 	[OPTIONS]
-change to
-local 	allow	all 		trust
+# TYPE	DATABASE 		USER	ADDRESS			METHOD
+
+# "local" is for Unix domain socket connections only
+local	all 			all						md5
+# IPv4 local connections:
+host	all				all		0.0.0.0/32 		md5
+# IPv6 local connections:
+host	all				all		::1/128			md5
+# Allow replication connections from localhost, by a user with the
+# replication privilege.
+local 	replication		all						trust
+host 	replication		all		0.0.0.0/32		trust
+host	replication		all		::1/128			trust
 ````
 5. Create a linux user with the same name node_user and password node_password
 ```
@@ -207,9 +216,8 @@ root@goorm: /anyfolder# sudo adduser node_user
 ```
 6. Run the bash file as node_user
 ```
-root@goorm: /anyfolder# sudo -i -u node_user
-node_user@goorm: cd /workspace/tutorial_postgresql/node_postgres/monsters_api
-node_user@goorm: /workspace/tutorial_postgresql/node_postgres/monsters_api# npm run configure
+root@goorm: cd /workspace/tutorial_postgresql/node_postgres/monsters_api
+root@goorm: /workspace/tutorial_postgresql/node_postgres/monsters_api# npm run configure
 
 > monsters_api@1.0.0 configure
 > ./bin/configuredb.sh
@@ -222,5 +230,5 @@ INSERT 0 3
 INSERT 0 3
 monstersdb configured
 
-node_user@goorm: /workspace/tutorial_postgresql/node_postgres/monsters_api#
-``à
+root@goorm: /workspace/tutorial_postgresql/node_postgres/monsters_api# exit
+```

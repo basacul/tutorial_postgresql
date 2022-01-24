@@ -1,13 +1,16 @@
 #!/bin/bash
+
+export PGPASSWORD="node_password"
+
 database="monstersdb"
 
 echo "Configuring database: $database"
 
-dropdb monstersdb
+dropdb -U node_user monstersdb
 
-createdb monstersdb
+createdb -U node_user monstersdb
 
-psql monstersdb < /workspace/tutorial_postgresql/node_postgres/monsters_api/bin/sql/monsters.sql
+psql -U node_user monstersdb < /workspace/tutorial_postgresql/node_postgres/monsters_api/bin/sql/monsters.sql
 
 echo "$database configured"
 
