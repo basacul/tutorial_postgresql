@@ -214,7 +214,7 @@ host	replication		all		::1/128			trust
 ```
 root@goorm: /anyfolder# sudo adduser node_user
 ```
-6. Run the bash file as node_user
+6. Run the bash file 
 ```
 root@goorm: cd /workspace/tutorial_postgresql/node_postgres/monsters_api
 root@goorm: /workspace/tutorial_postgresql/node_postgres/monsters_api# npm run configure
