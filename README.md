@@ -28,7 +28,7 @@ root@goorm:/anyfolder# sudo apt install postgresql postgresql-contrib
 5. Update the configuration file in /etc/postgresql/14/bin/postgresql.conf using vim such that
 - The attribute **listen_address** is uncommented with the value equal to '0.0.0.0' 
 ````
-root@goorm:/anyfolder# vim /etc/postgresql/14/bin/postgresql.conf
+root@goorm:/anyfolder# vim /etc/postgresql/14/main/postgresql.conf
 
 ...
 # - Connection Settings -
@@ -40,7 +40,7 @@ listen_address = '0.0.0.0'
 - IPv4 local connections is set to 0.0.0.0/32
 - Allow replication connections from localhost, by a user with the replication privilege is set to 0.0.0.0/32 (only one value)
 ````
-root@goorm:/anyfolder# vim /etc/postgresql/14/bin/pg_hba.conf
+root@goorm:/anyfolder# vim /etc/postgresql/14/main/pg_hba.conf
 
 ...
 # IPv4 local connections:
@@ -88,7 +88,7 @@ postgres@goorm:~$ exit
 logout
 root@goorm:/workspace/tutorial_postgresql/node_postgres#
 ```
-** Further issues
+## Further issues
 The database will shut down from time to time. This has to do with goorm.io doing something in the background. When this happens, you will see, that the terminal changed. 
 
 In that case just run the steps 9 and 10 and your database is running - till you need to repeat these steps.
@@ -150,3 +150,77 @@ creaturesdb=# select * from guardians join hobbits on guardians.hobbit = hobbits
 (3 rows)
 
 ```
+
+## Monsters API
+1. Initialize Project
+```
+root@goorm:/workspace/tutorial_postgresql/node_postgres(main)# mkdir monsters_api
+root@goorm:/workspace/tutorial_postgresql/node_postgres(main)# cd monsters_api
+root@goorm:/workspace/tutorial_postgresql/node_postgres/monsters_api(main)# npm initi -y
+root@goorm:/workspace/tutorial_postgresql/node_postgres/monsters_api(main)# npm i nodemon --save-dev
+root@goorm:/workspace/tutorial_postgresql/node_postgres/monsters_api(main)# npm i express body-parser pg --save
+```
+2. Create a user in postgresql for node
+```
+root@goorm:/...# sudo service postgresql start
+root@goorm:/...# pg_ctlcluster 14 main start
+root@goorm:/...# createdb monstersdb
+root@goorm:/...# sudo -i -u postgres
+postgres@goorm:# createdb monstersdb 
+postgres@goorm:# psql monstersdb
+psql (14.1 (Ubuntu 14.1-1.pgdg18.04+1))
+Type "help" for help.
+monstersdb=# CREATE USER node_user WITH SUPERUSER PASSWORD 'node_password';
+CREATE ROLE
+monstersdb=# SELECT * FROM pg_user;
+  usename  | usesysid | usecreatedb | usesuper | userepl | usebypassrls |  passwd  | valuntil | useconfig
+-----------+----------+-------------+----------+---------+--------------+----------+----------+-----------
+ postgres  |       10 | t           | t        | t       | t            | ******** |          |
+ node_user |    24577 | f           | t        | f       | f            | ******** |          |
+(2 rows)
+monstersdb=# exit
+```
+3. Create bash file to execute the creation and initialization of monstersdb with user node_user and modify executable rights for the file
+```
+root@goorm:/workspace/tutorial_postgresql/node_postgres/monsters_api/bin(main)# ls -l 
+total 8
+-rw-rw-r-- 1 root root  385 Jan 24 13:21 configuredb.sh
+drwxrwxr-x 2 root root 4096 Jan 24 12:59 sql
+root@goorm:/workspace/tutorial_postgresql/node_postgres/monsters_api/bin(main)# chmod +x configuredb.sh
+root@goorm:/workspace/tutorial_postgresql/node_postgres/monsters_api/bin(main)# ls -l 
+total 8
+-rwxrwxr-x 1 root root  385 Jan 24 13:21 configuredb.sh
+drwxrwxr-x 2 root root 4096 Jan 24 12:59 sql
+
+```
+4. Update pg_hba.conf file to allow the server to recognise the user node_user
+```
+root@goorm: /anyfolder# vim /etc/postgresql/14/main/pg_hba.conf
+....
+# local 		DATABASE 	USER	METHOD 	[OPTIONS]
+change to
+local 	allow	all 		trust
+````
+5. Create a linux user with the same name node_user and password node_password
+```
+root@goorm: /anyfolder# sudo adduser node_user
+```
+6. Run the bash file as node_user
+```
+root@goorm: /anyfolder# sudo -i -u node_user
+node_user@goorm: cd /workspace/tutorial_postgresql/node_postgres/monsters_api
+node_user@goorm: /workspace/tutorial_postgresql/node_postgres/monsters_api# npm run configure
+
+> monsters_api@1.0.0 configure
+> ./bin/configuredb.sh
+
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+INSERT 0 3
+INSERT 0 3
+INSERT 0 3
+monstersdb configured
+
+node_user@goorm: /workspace/tutorial_postgresql/node_postgres/monsters_api#
+``à
