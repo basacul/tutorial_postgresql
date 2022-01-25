@@ -36,4 +36,46 @@ router.post('/', (request, response, next) => {
 	});
 });
 
+router.put('/:id', (request, response, next) => {
+	const { id } = request.params;
+	const { name, personality } = request.body;
+	
+	// my solution
+	if(name && personality){
+		pool.query('UPDATE monsters SET name=$1, personality=$2 WHERE id=$3', [name,personality,id], (err, res) =>{
+			if(err) return next(err);
+			response.redirect('/monsters');
+		});
+	}else if(name){
+		pool.query('UPDATE monsters SET name=$1 WHERE id=$2', [name,id], (err, res) =>{
+			if(err) return next(err);
+			response.redirect('/monsters');
+		});
+	}else if(personality){
+		pool.query('UPDATE monsters SET personality=$1 WHERE id=$2', [personality,id], (err, res) =>{
+			if(err) return next(err);
+			response.redirect('/monsters');
+		});		
+	}else{
+		response.redirect('/monsters');
+	}
+	
+	/* // tutor's solution
+	 *
+	 * const keys = ['name', 'personality'];
+	 * const fields = [];
+	 * keys.forEach(key => {
+	 *	 if(request.body[key]) fields.push(key);
+	 * });
+	 * 
+	 * fields.forEach((field, index) => {
+	 *	 pool.query(`UPDATE monsters SET ${field}=($1) WHERE id=($2)`, [request.body[field], id], (err, res) => {
+	 *		 if(err) return next(err);
+	 *		 if(index === fields.length - 1) response.redirect('/monsters');
+	 *   });
+	 * });
+	 */
+
+});
+
 module.exports = router;
