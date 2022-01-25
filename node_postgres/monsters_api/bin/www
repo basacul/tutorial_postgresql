@@ -1,0 +1,6 @@
+#!/usr/bin/ node
+
+const app = require('../app');
+const port = 4500; // in goorm
+
+app.listen(port, () => console.log(`listening on port ${port}`));

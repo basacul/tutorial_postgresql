@@ -6,8 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
 	"configure": "./bin/configuredb.sh",
-	"start": "node index",
-    "dev": "nodemon index --ignore data/*"
+	"start": "node ./bin/www",
+    "dev": "nodemon ./bin/www"
   },
   "keywords": [],
   "author": "",

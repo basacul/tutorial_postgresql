@@ -201,6 +201,7 @@ root@goorm: /anyfolder# vim /etc/postgresql/14/main/pg_hba.conf
 # "local" is for Unix domain socket connections only
 local	all 			all						md5
 # IPv4 local connections:
+host	monstersdb		node_user	127.0.0.1/32 	md5
 host	all				all		0.0.0.0/32 		md5
 # IPv6 local connections:
 host	all				all		::1/128			md5
